@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -25,13 +26,19 @@ import org.jetbrains.compose.resources.painterResource
 import prueba.shared.generated.resources.Res
 import prueba.shared.generated.resources.compose_multiplatform
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.Navigator
+import cafe.adriel.voyager.navigator.currentOrThrow
+import cafe.adriel.voyager.transitions.SlideTransition
 
 @Composable
 @Preview
 fun App() {
     MaterialTheme {
-        Navigator(screen = MainScreen())
+        Navigator(screen = MainScreen()){
+            navigator ->
+            SlideTransition(navigator)
+        }
     }
 }
 
@@ -39,19 +46,11 @@ class MainScreen:Screen{
 
     @Composable
     override fun Content() {
-        MaterialTheme {
-            var name:String by remember { mutableStateOf("") }
-            Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-                Spacer(modifier = Modifier.height(38.dp))
-                TextField(
-                    value = name,
-                    onValueChange = {name = it}
+        val navigator = LocalNavigator.currentOrThrow //Si no encuentra, PARA -> "OrThrow" se puede quitar, otra opcion es comprobar con un if
 
-                )
-                Spacer(modifier = Modifier.height(38.dp))
-                AnimatedVisibility(name.isNotEmpty()){
-                    Text("hola $name", fontSize = 50.sp)
-                }
+        Column(modifier = Modifier.fillMaxWidth().padding(50.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+            Button(onClick = {navigator.push(Welcome())}){
+                Text("Navegación básica")
             }
         }
     }
